@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" />
+  </head>
+  <style>
+
+      body { font: 13px Helvetica, Arial; }
+      form { border: 0px solid #ccc; padding: 3px; position: relative; bottom: 0 !important; min-height: 50px}
+      form input { border: 1px solid #ccc; padding: 10px; width: 90%; margin-right: 3%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 12px; padding: 0; margin-top: 10%; overflow: auto; height: 500px;}
+      #messages li { padding: 5px 10px; border-radius: 8px; color:gray; background: #eee; margin-top: 0px; border: 1px solid #ccc;font-weight: bold}
+    /*  #messages li { background: #2196F3 !important; font-size: 1.2em; color:white } */
+      .blocMsg, .blocUsers {min-height: 600px; border-radius: 8px; border: 1px solid #ccc; margin-top: 3%; margin-bottom: 2%;}
+      .titleUsers {color: #D71B23; font-family: AleoBold, Tahoma, Arial, Helvetica, clean, sans-serif;}
+      .glyphicon-user {font-size: 2em !important; color: #9C27B0;}
+      .glyphicon:nth-child(2n+2) {color: #0091EA !important;}
+      .blocUserName {margin-top: 10%; margin-bottom: 2%;}
+      .listUsers {color : black; font-weight: bold; font-family: AleoBold, Tahoma, Arial, Helvetica, clean, sans-serif; background: #eee; padding: 2%; margin-bottom: 1.3%; color: green;}
+    </style>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Menu</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Home</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+        </div>
+    </nav>
+
+    <diV class="container"><br><br>
+      <div class="blocUserName form-group row">
+        <div class="col-lg-4 col-md-4 col-sm-5">
+            <input id="user" autocomplete="off" class="form-control" placeholder="votre nom..."/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="blocMsg col-lg-7 col-md-7 col-sm-8">
+          <ul id="messages"></ul>
+          <hr>
+          <form action="">
+            <input id="m" autocomplete="off" class="col-lg-9 col-md-9 col-sm-9" placeholder="votre message ici..."/><button class="btn btn-primary col-lg-2 col-md-2 col-sm-2">Send</button>
+          </form>
+          <div class="blocAlert"> </div>
+          <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+          <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+          <script>
+            var socket = io();
+            socket.on('connection', function(socket){
+              socket.broadcast.emit('Nourdine');
+
+            });
+
+            $('form').submit(function(){
+              socket.emit('chat message', $('#m').val());
+              $('#m').val('');
+              return false;
+            });
+            socket.on('chat message', function(msg){
+              var user = $('#user').val();
+              if(user!=""){
+                $('.blocAlert').remove();
+                $('#user').hide();
+                $('.listUsers').append($('<label>'+ user + '</label>'));
+                $('#messages').append($('<span class="glyphicon glyphicon-user col-lg-1 col-md-1 col-sm-1"></span>'));
+                $('#messages').append($('<li class="col-lg-11 col-md-11 col-sm-11">').text(user+" : "+msg));
+                $('#messages').append($('<br><br><br>'));
+              }else{
+                $('.blocAlert').append($('<div class="alert alert-danger" role="alert">Oups ! Veuillez saisir votre nom avant !</div>'));
+              }
+            });
+          </script>
+        </div>
+        <div class="blocUsers col-lg-4 col-md-4 col-sm-3 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+          <h2 class="titleUsers"> Utilisateurs connectés </h2>
+          <hr><br>
+          <div class="listUsers">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
